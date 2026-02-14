@@ -7,6 +7,106 @@ const Portfolio = () => {
   const [loading, setLoading] = useState(true);
   const [coverFit, setCoverFit] = useState('cover');
 
+  // Platform icon and color mapping with intelligent matching
+  const getPlatformStyle = (platformName) => {
+    if (!platformName) return { icon: 'fas fa-link', color: '#667eea' };
+    
+    // Normalize the platform name: lowercase, remove spaces, special chars
+    const normalize = (str) => str.toLowerCase().replace(/[\s\-_.]/g, '');
+    const normalized = normalize(platformName);
+    
+    const platformStyles = {
+      // Social Media (with common misspellings)
+      github: { icon: 'fab fa-github', color: '#181717' },
+      git: { icon: 'fab fa-github', color: '#181717' },
+      linkedin: { icon: 'fab fa-linkedin', color: '#0A66C2' },
+      linkdin: { icon: 'fab fa-linkedin', color: '#0A66C2' },
+      linkdein: { icon: 'fab fa-linkedin', color: '#0A66C2' },
+      linkedn: { icon: 'fab fa-linkedin', color: '#0A66C2' },
+      instagram: { icon: 'fab fa-instagram', color: '#E4405F' },
+      insta: { icon: 'fab fa-instagram', color: '#E4405F' },
+      istagram: { icon: 'fab fa-instagram', color: '#E4405F' },
+      instagr: { icon: 'fab fa-instagram', color: '#E4405F' },
+      facebook: { icon: 'fab fa-facebook', color: '#1877F2' },
+      fb: { icon: 'fab fa-facebook', color: '#1877F2' },
+      twitter: { icon: 'fab fa-twitter', color: '#1DA1F2' },
+      x: { icon: 'fab fa-twitter', color: '#000000' },
+      youtube: { icon: 'fab fa-youtube', color: '#FF0000' },
+      yt: { icon: 'fab fa-youtube', color: '#FF0000' },
+      tiktok: { icon: 'fab fa-tiktok', color: '#000000' },
+      snapchat: { icon: 'fab fa-snapchat', color: '#FFFC00' },
+      snap: { icon: 'fab fa-snapchat', color: '#FFFC00' },
+      pinterest: { icon: 'fab fa-pinterest', color: '#E60023' },
+      reddit: { icon: 'fab fa-reddit', color: '#FF4500' },
+      
+      // Messaging
+      whatsapp: { icon: 'fab fa-whatsapp', color: '#25D366' },
+      whatsap: { icon: 'fab fa-whatsapp', color: '#25D366' },
+      telegram: { icon: 'fab fa-telegram', color: '#26A5E4' },
+      discord: { icon: 'fab fa-discord', color: '#5865F2' },
+      slack: { icon: 'fab fa-slack', color: '#4A154B' },
+      skype: { icon: 'fab fa-skype', color: '#00AFF0' },
+      
+      // Coding Platforms
+      codeforces: { icon: 'fas fa-code', color: '#1F8ACB' },
+      codeforce: { icon: 'fas fa-code', color: '#1F8ACB' },
+      leetcode: { icon: 'fas fa-laptop-code', color: '#FFA116' },
+      leet: { icon: 'fas fa-laptop-code', color: '#FFA116' },
+      hackerrank: { icon: 'fab fa-hackerrank', color: '#2EC866' },
+      hacker: { icon: 'fab fa-hackerrank', color: '#2EC866' },
+      codechef: { icon: 'fas fa-utensils', color: '#5B4638' },
+      stackoverflow: { icon: 'fab fa-stack-overflow', color: '#F58025' },
+      stackexchange: { icon: 'fab fa-stack-exchange', color: '#1E5397' },
+      codepen: { icon: 'fab fa-codepen', color: '#000000' },
+      
+      // Development
+      gitlab: { icon: 'fab fa-gitlab', color: '#FC6D26' },
+      bitbucket: { icon: 'fab fa-bitbucket', color: '#0052CC' },
+      
+      // Design
+      behance: { icon: 'fab fa-behance', color: '#1769FF' },
+      dribbble: { icon: 'fab fa-dribbble', color: '#EA4C89' },
+      figma: { icon: 'fab fa-figma', color: '#F24E1E' },
+      
+      // Content/Blog
+      medium: { icon: 'fab fa-medium', color: '#000000' },
+      dev: { icon: 'fab fa-dev', color: '#0A0A0A' },
+      devto: { icon: 'fab fa-dev', color: '#0A0A0A' },
+      hashnode: { icon: 'fas fa-hashtag', color: '#2962FF' },
+      
+      // Streaming
+      twitch: { icon: 'fab fa-twitch', color: '#9146FF' },
+      
+      // Email/Contact
+      email: { icon: 'fas fa-envelope', color: '#EA4335' },
+      gmail: { icon: 'fas fa-envelope', color: '#EA4335' },
+      mail: { icon: 'fas fa-envelope', color: '#EA4335' },
+      
+      // Other
+      website: { icon: 'fas fa-globe', color: '#4285F4' },
+      site: { icon: 'fas fa-globe', color: '#4285F4' },
+      portfolio: { icon: 'fas fa-briefcase', color: '#764ba2' },
+    };
+
+    // Try exact match first
+    if (platformStyles[normalized]) {
+      return platformStyles[normalized];
+    }
+
+    // Try partial matching - check if any key is contained in the normalized name
+    // Sort keys by length (longer first) for better matching
+    const sortedKeys = Object.keys(platformStyles).sort((a, b) => b.length - a.length);
+    
+    for (const key of sortedKeys) {
+      if (normalized.includes(key) || key.includes(normalized)) {
+        return platformStyles[key];
+      }
+    }
+
+    // Default style for unknown platforms
+    return { icon: 'fas fa-link', color: '#667eea' };
+  };
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -133,7 +233,17 @@ const Portfolio = () => {
             )}
           </div>
           <div className="profile-name-section">
-            <h1 className="profile-name color-changing">{profile.name || 'Anonymous User'}</h1>
+            <h1 className="profile-name">
+              {(profile.name || 'Anonymous User').split('').map((char, index) => (
+                <span 
+                  key={index} 
+                  className="char-wave"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </h1>
             {profile.region && (
               <p className="profile-region">
                 <i className="icon-location"></i> Lives in {profile.region}
@@ -336,18 +446,26 @@ const Portfolio = () => {
               <div className="platforms-content">
                 {profile.platforms
                   .filter(platform => platform.platformName || platform.link)
-                  .map((platform, index) => (
-                    <a
-                      key={index}
-                      href={platform.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="platform-link"
-                    >
-                      <div className="platform-icon">{index + 1}</div>
-                      <span>{platform.platformName || 'Platform ' + (index + 1)}</span>
-                    </a>
-                  ))}
+                  .map((platform, index) => {
+                    const style = getPlatformStyle(platform.platformName || '');
+                    return (
+                      <a
+                        key={index}
+                        href={platform.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="platform-link"
+                      >
+                        <div 
+                          className="platform-icon" 
+                          style={{ background: style.color }}
+                        >
+                          <i className={style.icon}></i>
+                        </div>
+                        <span>{platform.platformName || 'Platform ' + (index + 1)}</span>
+                      </a>
+                    );
+                  })}
               </div>
             </div>
           )}

@@ -1,0 +1,51 @@
+.App {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.admin-tabs {
+  background: white;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 16px 24px;
+  background: white;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #65676b;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tab-btn:hover {
+  background: #f0f2f5;
+  color: #1877f2;
+}
+
+.tab-btn.active {
+  color: #1877f2;
+  border-bottom-color: #1877f2;
+  background: #f0f2f5;
+}
+
+.tab-btn i {
+  font-size: 18px;
+}
+
+.admin-content {
+  padding: 0;
+}

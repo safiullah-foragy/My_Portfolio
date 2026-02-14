@@ -21,6 +21,14 @@ const platformSchema = new mongoose.Schema({
   link: String
 });
 
+const projectSchema = new mongoose.Schema({
+  priority: Number,
+  title: String,
+  description: String,
+  liveLink: String,
+  githubLink: String
+});
+
 const profileSchema = new mongoose.Schema({
   profileImage: String,
   coverPhoto: String,
@@ -30,6 +38,8 @@ const profileSchema = new mongoose.Schema({
   motherName: String,
   contactNumber: String,
   email: String,
+  whatsapp: String,
+  gmail: String,
   homeAddress: String,
   countries: [String],
   region: String,
@@ -41,7 +51,8 @@ const profileSchema = new mongoose.Schema({
   sscResult: String,
   hscResult: String,
   universityResult: String,
-  platforms: [platformSchema]
+  platforms: [platformSchema],
+  projects: [projectSchema]
 }, {
   timestamps: true
 });

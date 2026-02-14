@@ -14,6 +14,8 @@ const AdminPanel = () => {
     motherName: '',
     contactNumber: '',
     email: '',
+    whatsapp: '',
+    gmail: '',
     homeAddress: '',
     countries: [],
     region: '',
@@ -379,6 +381,8 @@ const AdminPanel = () => {
           motherName: '',
           contactNumber: '',
           email: '',
+          whatsapp: '',
+          gmail: '',
           homeAddress: '',
           countries: [],
           region: '',
@@ -567,6 +571,26 @@ const AdminPanel = () => {
                 name="email"
                 value={profile.email}
                 onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>WhatsApp</label>
+              <input
+                type="tel"
+                name="whatsapp"
+                value={profile.whatsapp}
+                onChange={handleInputChange}
+                placeholder="+1234567890"
+              />
+            </div>
+            <div className="form-group">
+              <label>Gmail</label>
+              <input
+                type="email"
+                name="gmail"
+                value={profile.gmail}
+                onChange={handleInputChange}
+                placeholder="your.email@gmail.com"
               />
             </div>
             <div className="form-group full-width">

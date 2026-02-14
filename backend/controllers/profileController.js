@@ -6,6 +6,7 @@ exports.getProfile = async (req, res) => {
   try {
     // Get the first profile (single admin profile)
     const profile = await Profile.findOne();
+    console.log('Returning profile with projects:', profile?.projects);
     res.json(profile);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,6 +17,7 @@ exports.getProfile = async (req, res) => {
 exports.createOrUpdateProfile = async (req, res) => {
   try {
     const profileData = req.body;
+    console.log('Received profile data with projects:', profileData.projects);
     
     // Check if profile exists
     let profile = await Profile.findOne();

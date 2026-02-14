@@ -19,6 +19,8 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/profile', require('./routes/profileRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
