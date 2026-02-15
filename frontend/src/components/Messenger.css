@@ -566,3 +566,79 @@
 .messages-list::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* Attachment Previews */
+.attachment-preview {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.attachment-preview.image-preview img {
+  max-width: 300px;
+  max-height: 400px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.attachment-preview.image-preview img:hover {
+  transform: scale(1.02);
+}
+
+.attachment-preview.video-preview video {
+  max-width: 400px;
+  max-height: 400px;
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.attachment-preview .attachment-name {
+  font-size: 12px;
+  color: #65676b;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.message-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  color: #1877f2;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.attachment-link:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.user-message .attachment-link {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.user-message .attachment-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.admin-message .attachment-link {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.admin-message .attachment-link:hover {
+  background: rgba(255, 255, 255, 0.4);
+}

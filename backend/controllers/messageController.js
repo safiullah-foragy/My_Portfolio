@@ -26,17 +26,23 @@ exports.createMessage = async (req, res) => {
   try {
     const { userId, userName, userEmail, message, attachments } = req.body;
     
+    // Validate that at least message or attachments are provided
+    if (!message && (!attachments || attachments.length === 0)) {
+      return res.status(400).json({ message: 'Message or attachments are required' });
+    }
+    
     const newMessage = new Message({
       userId,
       userName,
       userEmail,
-      message,
+      message: message || '',
       attachments: attachments || [],
     });
     
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {
+    console.error('Error creating message:', error);
     res.status(500).json({ message: 'Error creating message', error: error.message });
   }
 };
@@ -45,15 +51,24 @@ exports.createMessage = async (req, res) => {
 exports.replyToMessage = async (req, res) => {
   try {
     const { id } = req.params;
-    const { adminReply } = req.body;
+    const { adminReply, adminAttachments } = req.body;
+    
+    const updateData = {
+      repliedAt: new Date(),
+      isRead: true,
+    };
+
+    if (adminReply) {
+      updateData.adminReply = adminReply;
+    }
+
+    if (adminAttachments && adminAttachments.length > 0) {
+      updateData.adminAttachments = adminAttachments;
+    }
     
     const message = await Message.findByIdAndUpdate(
       id,
-      { 
-        adminReply,
-        repliedAt: new Date(),
-        isRead: true,
-      },
+      updateData,
       { new: true }
     );
     

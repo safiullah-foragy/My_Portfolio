@@ -15,17 +15,22 @@ const messageSchema = new mongoose.Schema({
   },
   message: {
     type: String,
-    required: true,
+    default: '',
   },
   attachments: [{
-    type: String, // URL to file in Supabase storage
-    fileName: String,
-    fileType: String,
+    url: { type: String },
+    fileName: { type: String },
+    type: { type: String },
   }],
   adminReply: {
     type: String,
     default: '',
   },
+  adminAttachments: [{
+    url: { type: String },
+    fileName: { type: String },
+    type: { type: String },
+  }],
   repliedAt: {
     type: Date,
   },

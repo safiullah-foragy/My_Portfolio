@@ -37,6 +37,50 @@ const Messenger = () => {
     conversationEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const renderAttachment = (att, idx) => {
+    const fileType = att.type || att.fileType || '';
+    const fileUrl = att.url || att;
+    const fileName = att.fileName || `Attachment ${idx + 1}`;
+
+    // Image files
+    if (fileType.startsWith('image/')) {
+      return (
+        <div key={idx} className="attachment-preview image-preview">
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            <img src={fileUrl} alt={fileName} />
+          </a>
+          <div className="attachment-name">{fileName}</div>
+        </div>
+      );
+    }
+
+    // Video files
+    if (fileType.startsWith('video/')) {
+      return (
+        <div key={idx} className="attachment-preview video-preview">
+          <video controls>
+            <source src={fileUrl} type={fileType} />
+            Your browser does not support the video tag.
+          </video>
+          <div className="attachment-name">{fileName}</div>
+        </div>
+      );
+    }
+
+    // Other files (PDF, documents, etc.)
+    return (
+      <a 
+        key={idx}
+        href={fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="attachment-link"
+      >
+        <i className="fas fa-paperclip"></i> {fileName}
+      </a>
+    );
+  };
+
   const fetchUserMessages = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/messages/user/${user.id}`, {
@@ -161,13 +205,27 @@ const Messenger = () => {
       const attachments = [];
 
       // Upload files to Supabase storage
-      for (const file of files) {
-        const fileUrl = await uploadFile(file, user.id);
-        attachments.push({
-          url: fileUrl,
-          fileName: file.name,
-          fileType: file.type,
-        });
+      if (files.length > 0) {
+        try {
+          for (const file of files) {
+            const fileUrl = await uploadFile(file, user.id);
+            attachments.push({
+              url: fileUrl,
+              fileName: file.name,
+              type: file.type,
+            });
+          }
+        } catch (uploadError) {
+          console.error('File upload error:', uploadError);
+          // If files were selected but upload failed and no message text, don't send
+          if (!message.trim()) {
+            setError('Failed to upload files: ' + uploadError.message + '. Please add a text message or try again.');
+            setLoading(false);
+            return;
+          }
+          // If there's message text, continue without attachments
+          setError('Failed to upload files. Sending message without attachments.');
+        }
       }
 
       // Save message to database with JWT token
@@ -175,12 +233,8 @@ const Messenger = () => {
         userId: user.id,
         userName: user.name || user.email,
         userEmail: user.email,
-        message: message,
-        attachments: attachments.map(att => ({
-          type: att.fileType,
-          fileName: att.fileName,
-          url: att.url,
-        })),
+        message: message || '',
+        attachments: attachments,
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -191,7 +245,8 @@ const Messenger = () => {
       setTimeout(() => setSuccessMsg(''), 3000);
       fetchUserMessages();
     } catch (error) {
-      setError('Error sending message: ' + error.message);
+      console.error('Send message error:', error);
+      setError('Error sending message: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -436,17 +491,7 @@ const Messenger = () => {
                   
                   {msg.attachments && msg.attachments.length > 0 && (
                     <div className="message-attachments">
-                      {msg.attachments.map((att, idx) => (
-                        <a 
-                          key={idx} 
-                          href={att.url || att} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="attachment-link"
-                        >
-                          <i className="fas fa-paperclip"></i> {att.fileName || `Attachment ${idx + 1}`}
-                        </a>
-                      ))}
+                      {msg.attachments.map((att, idx) => renderAttachment(att, idx))}
                     </div>
                   )}
                   
@@ -463,6 +508,13 @@ const Messenger = () => {
                   <div className="message-bubble admin-message">
                     <div className="admin-label">Admin</div>
                     <div className="message-text">{msg.adminReply}</div>
+                    
+                    {msg.adminAttachments && msg.adminAttachments.length > 0 && (
+                      <div className="message-attachments">
+                        {msg.adminAttachments.map((att, idx) => renderAttachment(att, idx))}
+                      </div>
+                    )}
+                    
                     <div className="message-meta">
                       <span className="message-time">
                         {new Date(msg.repliedAt).toLocaleString()}

@@ -15,13 +15,13 @@ export const supabase = isSupabaseConfigured
 export const STORAGE_BUCKET = process.env.REACT_APP_SUPABASE_BUCKET || 'profile_image';
 
 // Helper to upload file to Supabase storage
-export const uploadFile = async (file, userId) => {
+export const uploadFile = async (file, folder = 'messages/admin') => {
   if (!supabase) {
     throw new Error('Supabase not configured');
   }
   
   const fileExt = file.name.split('.').pop();
-  const fileName = `messages/${userId}/${Date.now()}.${fileExt}`;
+  const fileName = `${folder}/${Date.now()}_${file.name}`;
   
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)

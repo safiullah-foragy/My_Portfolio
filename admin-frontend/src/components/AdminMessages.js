@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { uploadFile } from '../config/supabase';
 import './AdminMessages.css';
 
 const AdminMessages = () => {
@@ -8,9 +9,12 @@ const AdminMessages = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserMessages, setSelectedUserMessages] = useState([]);
   const [replyText, setReplyText] = useState('');
+  const [replyFiles, setReplyFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all'); // all, unread, replied
+  const [uploadError, setUploadError] = useState('');
   const conversationEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchMessages();
@@ -26,6 +30,50 @@ const AdminMessages = () => {
 
   const scrollToBottom = () => {
     conversationEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const renderAttachment = (att, idx) => {
+    const fileType = att.type || att.fileType || '';
+    const fileUrl = att.url || att;
+    const fileName = att.fileName || `Attachment ${idx + 1}`;
+
+    // Image files
+    if (fileType.startsWith('image/')) {
+      return (
+        <div key={idx} className="attachment-preview image-preview">
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            <img src={fileUrl} alt={fileName} />
+          </a>
+          <div className="attachment-name">{fileName}</div>
+        </div>
+      );
+    }
+
+    // Video files
+    if (fileType.startsWith('video/')) {
+      return (
+        <div key={idx} className="attachment-preview video-preview">
+          <video controls>
+            <source src={fileUrl} type={fileType} />
+            Your browser does not support the video tag.
+          </video>
+          <div className="attachment-name">{fileName}</div>
+        </div>
+      );
+    }
+
+    // Other files (PDF, documents, etc.)
+    return (
+      <a 
+        key={idx}
+        href={fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="attachment-link"
+      >
+        <i className="fas fa-paperclip"></i> {fileName}
+      </a>
+    );
   };
 
   const fetchMessages = async () => {
@@ -98,25 +146,65 @@ const AdminMessages = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    setReplyFiles(selectedFiles);
+    setUploadError('');
+  };
+
   const handleReply = async () => {
-    if (!replyText.trim() || !selectedUserMessages.length) return;
+    if (!replyText.trim() && replyFiles.length === 0) return;
+    if (!selectedUserMessages.length) return;
 
     // Find the first unreplied message or use the latest message
     const unrepliedMessage = selectedUserMessages.find(msg => !msg.adminReply);
     const targetMessage = unrepliedMessage || selectedUserMessages[selectedUserMessages.length - 1];
 
     setLoading(true);
+    setUploadError('');
+    
     try {
+      const attachments = [];
+
+      // Upload files if any
+      if (replyFiles.length > 0) {
+        try {
+          for (const file of replyFiles) {
+            const fileUrl = await uploadFile(file, 'messages/admin');
+            attachments.push({
+              url: fileUrl,
+              fileName: file.name,
+              type: file.type,
+            });
+          }
+        } catch (uploadError) {
+          console.error('File upload error:', uploadError);
+          // If files were selected but upload failed and no message text, don't send
+          if (!replyText.trim()) {
+            setUploadError('Failed to upload files: ' + uploadError.message + '. Please add a text message or try again.');
+            setLoading(false);
+            return;
+          }
+          // If there's message text, continue without attachments
+          setUploadError('Failed to upload files. Sending message without attachments.');
+        }
+      }
+
       await axios.put(`http://localhost:5000/api/messages/${targetMessage._id}/reply`, {
         adminReply: replyText,
+        adminAttachments: attachments,
       });
       
       setReplyText('');
+      setReplyFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       // Refresh the conversation
       handleSelectUser(selectedUser);
     } catch (error) {
       console.error('Error sending reply:', error);
-      alert('Error sending reply');
+      alert('Error sending reply: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -257,17 +345,7 @@ const AdminMessages = () => {
                       
                       {msg.attachments && msg.attachments.length > 0 && (
                         <div className="message-attachments">
-                          {msg.attachments.map((att, idx) => (
-                            <a 
-                              key={idx} 
-                              href={att.url || att} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="attachment-link"
-                            >
-                              <i className="fas fa-paperclip"></i> {att.fileName || `Attachment ${idx + 1}`}
-                            </a>
-                          ))}
+                          {msg.attachments.map((att, idx) => renderAttachment(att, idx))}
                         </div>
                       )}
                       
@@ -287,6 +365,13 @@ const AdminMessages = () => {
                           </span>
                         </div>
                         <div className="message-text">{msg.adminReply}</div>
+                        
+                        {msg.adminAttachments && msg.adminAttachments.length > 0 && (
+                          <div className="message-attachments">
+                            {msg.adminAttachments.map((att, idx) => renderAttachment(att, idx))}
+                          </div>
+                        )}
+                        
                         <div className="message-meta">
                           <span className="message-time">
                             {new Date(msg.repliedAt).toLocaleString()}
@@ -301,29 +386,49 @@ const AdminMessages = () => {
 
               {/* Reply Input at Bottom */}
               <div className="reply-input-container">
-                <textarea
-                  placeholder="Type your message..."
-                  rows="1"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleReply();
-                    }
-                  }}
-                />
-                <button
-                  className="send-reply-btn"
-                  onClick={handleReply}
-                  disabled={loading || !replyText.trim()}
-                >
-                  {loading ? (
-                    <i className="fas fa-spinner fa-spin"></i>
-                  ) : (
-                    <i className="fas fa-paper-plane"></i>
-                  )}
-                </button>
+                {uploadError && <div className="upload-error">{uploadError}</div>}
+                
+                <div className="file-upload-section">
+                  <label htmlFor="admin-file-input" className="file-input-label">
+                    <i className="fas fa-paperclip"></i>
+                    {replyFiles.length > 0 ? `${replyFiles.length} file(s) selected` : 'Attach files'}
+                  </label>
+                  <input
+                    id="admin-file-input"
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                    style={{ display: 'none' }}
+                  />
+                </div>
+                
+                <div className="message-input-wrapper">
+                  <textarea
+                    placeholder="Type your message..."
+                    rows="3"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleReply();
+                      }
+                    }}
+                  />
+                  <button
+                    className="send-reply-btn"
+                    onClick={handleReply}
+                    disabled={loading || (!replyText.trim() && replyFiles.length === 0)}
+                  >
+                    {loading ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : (
+                      <i className="fas fa-paper-plane"></i>
+                    )}
+                  </button>
+                </div>
               </div>
             </>
           )}
