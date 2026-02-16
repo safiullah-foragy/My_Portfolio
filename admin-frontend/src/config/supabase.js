@@ -20,10 +20,9 @@ export const uploadFile = async (file, folder = 'messages/admin') => {
     throw new Error('Supabase not configured');
   }
   
-  const fileExt = file.name.split('.').pop();
   const fileName = `${folder}/${Date.now()}_${file.name}`;
   
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .upload(fileName, file, {
       cacheControl: '3600',

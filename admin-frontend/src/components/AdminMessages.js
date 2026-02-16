@@ -4,7 +4,6 @@ import { uploadFile } from '../config/supabase';
 import './AdminMessages.css';
 
 const AdminMessages = () => {
-  const [allMessages, setAllMessages] = useState([]);
   const [userConversations, setUserConversations] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserMessages, setSelectedUserMessages] = useState([]);
@@ -21,6 +20,7 @@ const AdminMessages = () => {
     // Poll for new messages every 30 seconds
     const interval = setInterval(fetchMessages, 30000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-scroll to bottom when messages change
@@ -78,8 +78,7 @@ const AdminMessages = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/messages');
-      setAllMessages(response.data);
+      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/messages');
       groupMessagesByUser(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -126,7 +125,7 @@ const AdminMessages = () => {
   const handleSelectUser = async (conversation) => {
     setSelectedUser(conversation);
     try {
-      const response = await axios.get(`http://localhost:5000/api/messages/admin/user/${conversation.userId}`);
+      const response = await axios.get(`https://my-portfolio-hxer.onrender.com/api/messages/admin/user/${conversation.userId}`);
       // Sort messages chronologically (oldest first for chat view)
       const sortedMessages = response.data.sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
@@ -136,7 +135,7 @@ const AdminMessages = () => {
       // Mark unread messages as read
       const unreadMessages = sortedMessages.filter(msg => !msg.isRead);
       for (const msg of unreadMessages) {
-        await axios.put(`http://localhost:5000/api/messages/${msg._id}/read`);
+        await axios.put(`https://my-portfolio-hxer.onrender.com/api/messages/${msg._id}/read`);
       }
       
       // Refresh the conversations list
@@ -190,7 +189,7 @@ const AdminMessages = () => {
         }
       }
 
-      await axios.put(`http://localhost:5000/api/messages/${targetMessage._id}/reply`, {
+      await axios.put(`https://my-portfolio-hxer.onrender.com/api/messages/${targetMessage._id}/reply`, {
         adminReply: replyText,
         adminAttachments: attachments,
       });
@@ -214,7 +213,7 @@ const AdminMessages = () => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/messages/${messageId}`);
+      await axios.delete(`https://my-portfolio-hxer.onrender.com/api/messages/${messageId}`);
       // Refresh the conversation
       if (selectedUser) {
         handleSelectUser(selectedUser);

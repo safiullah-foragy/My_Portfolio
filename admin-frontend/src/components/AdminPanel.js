@@ -123,7 +123,7 @@ const AdminPanel = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('/api/profile');
+      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/profile');
       if (response.data) {
         // Ensure platforms and projects arrays exist
         const platforms = response.data.platforms || [];
@@ -189,7 +189,7 @@ const AdminPanel = () => {
     formData.append('image', imageFile);
 
     try {
-      const response = await axios.post('/api/profile/upload', formData, {
+      const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/profile/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -208,7 +208,7 @@ const AdminPanel = () => {
     formData.append('image', coverFile);
 
     try {
-      const response = await axios.post('/api/profile/upload', formData, {
+      const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/profile/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -393,7 +393,7 @@ const AdminPanel = () => {
       };
 
       console.log('Saving profile with projects:', updatedProfile.projects);
-      await axios.post('/api/profile', updatedProfile);
+      await axios.post('https://my-portfolio-hxer.onrender.com/api/profile', updatedProfile);
       showMessage('Profile saved successfully!');
       fetchProfile();
     } catch (error) {
@@ -407,7 +407,7 @@ const AdminPanel = () => {
     if (window.confirm('Are you sure you want to delete the entire profile?')) {
       setLoading(true);
       try {
-        await axios.delete('/api/profile');
+        await axios.delete('https://my-portfolio-hxer.onrender.com/api/profile');
         showMessage('Profile deleted successfully!');
         setProfile({
           profileImage: '',
