@@ -26,6 +26,7 @@ const Messenger = () => {
     if (user) {
       fetchUserMessages();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Auto-scroll to bottom when messages change

@@ -23,7 +23,7 @@ export const uploadFile = async (file, userId) => {
   const fileExt = file.name.split('.').pop();
   const fileName = `messages/${userId}/${Date.now()}.${fileExt}`;
   
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .upload(fileName, file, {
       cacheControl: '3600',

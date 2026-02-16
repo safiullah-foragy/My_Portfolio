@@ -22,32 +22,6 @@ const Contact = () => {
     }
   };
 
-  const getPlatformIcon = (platformName) => {
-    if (!platformName) return 'fas fa-link';
-    
-    const normalized = platformName.toLowerCase().replace(/[\s\-_.]/g, '');
-    
-    const iconMap = {
-      linkedin: 'fab fa-linkedin',
-      facebook: 'fab fa-facebook',
-      twitter: 'fab fa-twitter',
-      github: 'fab fa-github',
-      instagram: 'fab fa-instagram',
-      youtube: 'fab fa-youtube',
-      whatsapp: 'fab fa-whatsapp',
-      telegram: 'fab fa-telegram',
-      discord: 'fab fa-discord',
-    };
-
-    for (const [key, icon] of Object.entries(iconMap)) {
-      if (normalized.includes(key)) {
-        return icon;
-      }
-    }
-    
-    return 'fas fa-link';
-  };
-
   const getLinkedInProfile = () => {
     if (!profile?.platforms) return null;
     const linkedin = profile.platforms.find(p => 
