@@ -13,7 +13,7 @@ const Contact = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('/api/profile');
+      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/profile');
       setProfile(response.data);
       setLoading(false);
     } catch (error) {

@@ -13,7 +13,7 @@ const Projects = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('/api/profile');
+      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/profile');
       const projectsList = response.data.projects || [];
       console.log('Fetched projects:', projectsList);
       // Filter valid projects and sort by priority

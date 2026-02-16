@@ -84,7 +84,7 @@ const Messenger = () => {
 
   const fetchUserMessages = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/messages/user/${user.id}`, {
+      const response = await axios.get(`https://my-portfolio-hxer.onrender.com/api/messages/user/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(response.data);
@@ -230,7 +230,7 @@ const Messenger = () => {
       }
 
       // Save message to database with JWT token
-      await axios.post('http://localhost:5000/api/messages', {
+      await axios.post('https://my-portfolio-hxer.onrender.com/api/messages', {
         userId: user.id,
         userName: user.name || user.email,
         userEmail: user.email,
