@@ -61,6 +61,9 @@ const AdminPanel = () => {
     githubLink: ''
   });
 
+  const [editingProjectIndex, setEditingProjectIndex] = useState(null);
+  const [editingProject, setEditingProject] = useState(null);
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [coverFile, setCoverFile] = useState(null);
@@ -313,6 +316,40 @@ const AdminPanel = () => {
       ...prev,
       projects: prev.projects.filter((_, i) => i !== index)
     }));
+  };
+
+  const handleEditProject = (index) => {
+    setEditingProjectIndex(index);
+    setEditingProject({ ...profile.projects[index] });
+  };
+
+  const handleSaveEditedProject = () => {
+    if (!editingProject.priority || !editingProject.title || !editingProject.description) {
+      showMessage('Please fill in all required fields (Priority, Title, Description)');
+      return;
+    }
+
+    setProfile(prev => {
+      const updatedProjects = [...prev.projects];
+      updatedProjects[editingProjectIndex] = {
+        ...editingProject,
+        priority: parseInt(editingProject.priority)
+      };
+      // Re-sort by priority
+      return {
+        ...prev,
+        projects: updatedProjects.sort((a, b) => a.priority - b.priority)
+      };
+    });
+
+    setEditingProjectIndex(null);
+    setEditingProject(null);
+    showMessage('Project updated successfully!');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectIndex(null);
+    setEditingProject(null);
   };
 
   const handleClearAllProjects = () => {
@@ -879,30 +916,130 @@ const AdminPanel = () => {
               <div className="projects-list">
                 {profile.projects.map((project, index) => (
                   <div key={index} className="project-card">
-                    <div className="project-header">
-                      <span className="priority-badge">Priority: {project.priority}</span>
-                      <button 
-                        type="button" 
-                        className="btn-delete" 
-                        onClick={() => handleDeleteProject(index)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                    <h4>{project.title}</h4>
-                    <p>{project.description}</p>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      {project.liveLink && (
-                        <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="project-link">
-                          🔗 Live Project
-                        </a>
-                      )}
-                      {project.githubLink && (
-                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="project-link">
-                          💻 GitHub
-                        </a>
-                      )}
-                    </div>
+                    {editingProjectIndex === index ? (
+                      // Edit Mode
+                      <div className="edit-project-form">
+                        <h3 style={{ marginTop: '0', marginBottom: '15px' }}>Edit Project</h3>
+                        <div className="project-form-grid">
+                          <input
+                            type="number"
+                            placeholder="Priority Number"
+                            value={editingProject.priority}
+                            onChange={(e) => setEditingProject(prev => ({ ...prev, priority: e.target.value }))}
+                            min="1"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Project Title"
+                            value={editingProject.title}
+                            onChange={(e) => setEditingProject(prev => ({ ...prev, title: e.target.value }))}
+                          />
+                          <textarea
+                            placeholder="Project Description"
+                            value={editingProject.description}
+                            onChange={(e) => setEditingProject(prev => ({ ...prev, description: e.target.value }))}
+                            rows="3"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Live Project Link (optional)"
+                            value={editingProject.liveLink}
+                            onChange={(e) => setEditingProject(prev => ({ ...prev, liveLink: e.target.value }))}
+                          />
+                          <input
+                            type="text"
+                            placeholder="GitHub Link (optional)"
+                            value={editingProject.githubLink}
+                            onChange={(e) => setEditingProject(prev => ({ ...prev, githubLink: e.target.value }))}
+                          />
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                          <button 
+                            type="button" 
+                            className="btn-save-edit" 
+                            onClick={handleSaveEditedProject}
+                            style={{
+                              background: '#28a745',
+                              color: 'white',
+                              padding: '10px 20px',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                              flex: '1'
+                            }}
+                          >
+                            Save Changes
+                          </button>
+                          <button 
+                            type="button" 
+                            className="btn-cancel-edit" 
+                            onClick={handleCancelEdit}
+                            style={{
+                              background: '#6c757d',
+                              color: 'white',
+                              padding: '10px 20px',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                              flex: '1'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // View Mode
+                      <>
+                        <div className="project-header">
+                          <span className="priority-badge">Priority: {project.priority}</span>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button 
+                              type="button" 
+                              className="btn-edit" 
+                              onClick={() => handleEditProject(index)}
+                              style={{
+                                background: '#007bff',
+                                color: 'white',
+                                padding: '6px 12px',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '600'
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              type="button" 
+                              className="btn-delete" 
+                              onClick={() => handleDeleteProject(index)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <h4>{project.title}</h4>
+                        <p>{project.description}</p>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                          {project.liveLink && (
+                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="project-link">
+                              🔗 Live Project
+                            </a>
+                          )}
+                          {project.githubLink && (
+                            <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="project-link">
+                              💻 GitHub
+                            </a>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

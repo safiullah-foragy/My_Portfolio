@@ -522,6 +522,53 @@
   text-decoration: underline;
 }
 
+.edit-project-form {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #667eea;
+}
+
+.edit-project-form h3 {
+  color: #667eea;
+  font-size: 18px;
+}
+
+.edit-project-form .project-form-grid {
+  margin-bottom: 0;
+}
+
+.edit-project-form .project-form-grid input,
+.edit-project-form .project-form-grid textarea {
+  background: white;
+  border: 2px solid #ddd;
+}
+
+.edit-project-form .project-form-grid input:focus,
+.edit-project-form .project-form-grid textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-edit {
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  background: #0056b3 !important;
+  transform: scale(1.05);
+}
+
+.btn-save-edit:hover {
+  background: #218838 !important;
+  transform: scale(1.02);
+}
+
+.btn-cancel-edit:hover {
+  background: #5a6268 !important;
+  transform: scale(1.02);
+}
+
 @media (max-width: 768px) {
   .projects-list {
     grid-template-columns: 1fr;
