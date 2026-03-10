@@ -3,19 +3,23 @@ const mongoose = require('mongoose');
 const messageSchema = new mongoose.Schema({
   userId: {
     type: String,
+    required: false,
+  },
+  name: {
+    type: String,
     required: true,
   },
   userName: {
     type: String,
-    required: true,
+    required: false,
   },
   userEmail: {
     type: String,
-    required: true,
+    required: false,
   },
   message: {
     type: String,
-    default: '',
+    required: true,
   },
   attachments: [{
     url: { type: String },

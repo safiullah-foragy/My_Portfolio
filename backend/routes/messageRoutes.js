@@ -6,6 +6,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Get all messages (admin)
 router.get('/', messageController.getAllMessages);
 
+// Create a simple message (no auth required)
+router.post('/simple', messageController.createSimpleMessage);
+
 // Get messages by user ID (protected - for logged-in users)
 router.get('/user/:userId', authMiddleware, messageController.getMessagesByUser);
 

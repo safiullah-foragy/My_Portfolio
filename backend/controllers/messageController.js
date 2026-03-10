@@ -10,6 +10,32 @@ exports.getAllMessages = async (req, res) => {
   }
 };
 
+// Create a simple message (no authentication required)
+exports.createSimpleMessage = async (req, res) => {
+  try {
+    const { name, message } = req.body;
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    
+    if (!message || !message.trim()) {
+      return res.status(400).json({ message: 'Message is required' });
+    }
+    
+    const newMessage = new Message({
+      name: name.trim(),
+      message: message.trim(),
+    });
+    
+    await newMessage.save();
+    res.status(201).json({ success: true, message: 'Message sent successfully' });
+  } catch (error) {
+    console.error('Error creating message:', error);
+    res.status(500).json({ message: 'Error creating message', error: error.message });
+  }
+};
+
 // Get messages by user ID
 exports.getMessagesByUser = async (req, res) => {
   try {

@@ -123,7 +123,7 @@ const AdminPanel = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/profile');
+      const response = await axios.get('http://localhost:5000/api/profile');
       if (response.data) {
         // Ensure platforms and projects arrays exist
         const platforms = response.data.platforms || [];
@@ -189,7 +189,7 @@ const AdminPanel = () => {
     formData.append('image', imageFile);
 
     try {
-      const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/profile/upload', formData, {
+      const response = await axios.post('http://localhost:5000/api/profile/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -208,7 +208,7 @@ const AdminPanel = () => {
     formData.append('image', coverFile);
 
     try {
-      const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/profile/upload', formData, {
+      const response = await axios.post('http://localhost:5000/api/profile/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -269,7 +269,7 @@ const AdminPanel = () => {
     }));
   };
 
-  const handleAddProject = () => {
+  const handleAddProject = async () => {
     alert('handleAddProject called!'); // Debug
     console.log('handleAddProject function triggered');
     console.log('newProject state:', newProject);
@@ -290,32 +290,67 @@ const AdminPanel = () => {
     console.log('Adding project:', projectToAdd);
     console.log('Current projects:', profile.projects);
 
-    setProfile(prev => {
-      const updatedProjects = [...(prev.projects || []), projectToAdd].sort((a, b) => a.priority - b.priority);
-      console.log('Updated projects:', updatedProjects);
-      return {
-        ...prev,
-        projects: updatedProjects
-      };
-    });
+    const updatedProjects = [...(profile.projects || []), projectToAdd].sort((a, b) => a.priority - b.priority);
+    console.log('Updated projects:', updatedProjects);
 
-    // Reset form
-    setNewProject({
-      priority: '',
-      title: '',
-      description: '',
-      liveLink: '',
-      githubLink: ''
-    });
+    // Update profile with new project
+    const updatedProfile = {
+      ...profile,
+      projects: updatedProjects
+    };
 
-    showMessage('Project added successfully!');
+    // Save to database immediately
+    try {
+      setLoading(true);
+      console.log('Saving profile with projects:', updatedProfile.projects);
+      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      
+      // Update local state after successful save
+      setProfile(updatedProfile);
+      
+      // Reset form
+      setNewProject({
+        priority: '',
+        title: '',
+        description: '',
+        liveLink: '',
+        githubLink: ''
+      });
+
+      showMessage('Project added and saved successfully!');
+      
+      // Fetch fresh data from server
+      fetchProfile();
+    } catch (error) {
+      showMessage('Error saving project: ' + error.message);
+      console.error('Error adding project:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteProject = (index) => {
-    setProfile(prev => ({
-      ...prev,
-      projects: prev.projects.filter((_, i) => i !== index)
-    }));
+  const handleDeleteProject = async (index) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const updatedProjects = profile.projects.filter((_, i) => i !== index);
+      const updatedProfile = {
+        ...profile,
+        projects: updatedProjects
+      };
+
+      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      setProfile(updatedProfile);
+      showMessage('Project deleted successfully!');
+      fetchProfile();
+    } catch (error) {
+      showMessage('Error deleting project: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditProject = (index) => {
@@ -323,28 +358,37 @@ const AdminPanel = () => {
     setEditingProject({ ...profile.projects[index] });
   };
 
-  const handleSaveEditedProject = () => {
+  const handleSaveEditedProject = async () => {
     if (!editingProject.priority || !editingProject.title || !editingProject.description) {
       showMessage('Please fill in all required fields (Priority, Title, Description)');
       return;
     }
 
-    setProfile(prev => {
-      const updatedProjects = [...prev.projects];
+    try {
+      setLoading(true);
+      const updatedProjects = [...profile.projects];
       updatedProjects[editingProjectIndex] = {
         ...editingProject,
         priority: parseInt(editingProject.priority)
       };
-      // Re-sort by priority
-      return {
-        ...prev,
-        projects: updatedProjects.sort((a, b) => a.priority - b.priority)
+      
+      const sortedProjects = updatedProjects.sort((a, b) => a.priority - b.priority);
+      const updatedProfile = {
+        ...profile,
+        projects: sortedProjects
       };
-    });
 
-    setEditingProjectIndex(null);
-    setEditingProject(null);
-    showMessage('Project updated successfully!');
+      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      setProfile(updatedProfile);
+      setEditingProjectIndex(null);
+      setEditingProject(null);
+      showMessage('Project updated and saved successfully!');
+      fetchProfile();
+    } catch (error) {
+      showMessage('Error updating project: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -393,7 +437,7 @@ const AdminPanel = () => {
       };
 
       console.log('Saving profile with projects:', updatedProfile.projects);
-      await axios.post('https://my-portfolio-hxer.onrender.com/api/profile', updatedProfile);
+      await axios.post('http://localhost:5000/api/profile', updatedProfile);
       showMessage('Profile saved successfully!');
       fetchProfile();
     } catch (error) {
@@ -407,7 +451,7 @@ const AdminPanel = () => {
     if (window.confirm('Are you sure you want to delete the entire profile?')) {
       setLoading(true);
       try {
-        await axios.delete('https://my-portfolio-hxer.onrender.com/api/profile');
+        await axios.delete('http://localhost:5000/api/profile');
         showMessage('Profile deleted successfully!');
         setProfile({
           profileImage: '',

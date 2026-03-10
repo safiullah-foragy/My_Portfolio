@@ -1,84 +1,13 @@
 .projects-container {
   min-height: 100vh;
   background-color: #f0f2f5;
-  padding: 20px;
+  padding: 40px 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 40px;
   max-width: 1400px;
   margin: 0 auto;
-}
-
-/* Top Section with Profile and Header */
-.projects-top-section {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-/* Mini Profile Section */
-.mini-profile {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 250px;
-  flex-shrink: 0;
-}
-
-.mini-profile-image {
-  flex-shrink: 0;
-}
-
-.mini-profile-image img,
-.mini-profile-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #1877f2;
-}
-
-.mini-profile-placeholder {
-  background: linear-gradient(135deg, #1877f2, #667eea);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: bold;
-}
-
-.mini-profile-info {
-  text-align: center;
-  width: 100%;
-}
-
-.mini-profile-info h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1c1e21;
-  margin: 0 0 8px 0;
-}
-
-.mini-profile-region {
-  font-size: 14px;
-  color: #65676b;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.mini-profile-region i {
-  font-size: 12px;
-  color: #1877f2;
 }
 
 .projects-content {
@@ -98,37 +27,28 @@
 }
 
 .projects-header {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   text-align: center;
-  padding: 0 20px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .projects-header h1 {
-  font-size: 32px;
-  font-weight: bold;
+  font-size: 48px;
+  font-weight: 800;
   color: #1c1e21;
-  margin-bottom: 8px;
-  background: linear-gradient(90deg, #1877f2, #667eea);
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.projects-header p {
-  font-size: 15px;
-  color: #65676b;
-  margin: 0;
+  letter-spacing: -1px;
 }
 
 .projects-grid {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  gap: 24px;
   padding: 0;
 }
 
@@ -261,62 +181,20 @@
 
 @media (max-width: 768px) {
   .projects-container {
-    flex-direction: column;
-    padding: 15px;
-    gap: 20px;
-  }
-
-  .projects-top-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .mini-profile {
-    width: 100%;
-    flex-direction: row;
-    text-align: left;
-  }
-
-  .mini-profile-image img,
-  .mini-profile-placeholder {
-    width: 60px;
-    height: 60px;
-  }
-
-  .mini-profile-placeholder {
-    font-size: 24px;
-  }
-
-  .mini-profile-info {
-    text-align: left;
-  }
-
-  .mini-profile-info h3 {
-    font-size: 16px;
-  }
-
-  .mini-profile-region {
-    font-size: 13px;
-    justify-content: flex-start;
+    padding: 20px 15px;
+    gap: 30px;
   }
 
   .projects-header {
-    padding: 0;
-    align-items: flex-start;
-    text-align: left;
+    padding: 10px;
+  }
+
+  .projects-header h1 {
+    font-size: 36px;
   }
 
   .projects-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .projects-header h1 {
-    font-size: 28px;
-  }
-
-  .projects-header p {
-    font-size: 16px;
+    gap: 20px;
   }
 }

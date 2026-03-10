@@ -4,7 +4,6 @@ import './Projects.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,14 +12,13 @@ const Projects = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/profile');
+      const response = await axios.get('http://localhost:5000/api/profile');
       const projectsList = response.data.projects || [];
       console.log('Fetched projects:', projectsList);
       // Filter valid projects and sort by priority
       const validProjects = projectsList.filter(p => p && p.priority && p.title);
       const sortedProjects = validProjects.sort((a, b) => a.priority - b.priority);
       setProjects(sortedProjects);
-      setProfile(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -48,34 +46,8 @@ const Projects = () => {
 
   return (
     <div className="projects-container">
-      <div className="projects-top-section">
-        {/* Mini Profile Section */}
-        {profile && (
-          <div className="mini-profile">
-            <div className="mini-profile-image">
-              {profile.profileImage ? (
-                <img src={profile.profileImage} alt={profile.name} />
-              ) : (
-                <div className="mini-profile-placeholder">
-                  {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
-                </div>
-              )}
-            </div>
-            <div className="mini-profile-info">
-              <h3>{profile.name || 'Anonymous'}</h3>
-              {profile.region && (
-                <p className="mini-profile-region">
-                  <i className="fas fa-map-marker-alt"></i> {profile.region}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div className="projects-header">
-          <h1>My Projects</h1>
-          <p>Check out some of my work below</p>
-        </div>
+      <div className="projects-header">
+        <h1>My Projects</h1>
       </div>
 
       <div className="projects-content">
