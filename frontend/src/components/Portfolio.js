@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config/api';
 import './Portfolio.css';
 
 const Portfolio = () => {
@@ -113,7 +114,7 @@ const Portfolio = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/profile');
+      const response = await axios.get(`${API_URL}/api/profile`);
       setProfile(response.data);
       setLoading(false);
     } catch (error) {

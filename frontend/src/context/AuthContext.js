@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config/api';
 
 const AuthContext = createContext();
 
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get('https://my-portfolio-hxer.onrender.com/api/auth/profile', {
+      const response = await axios.get(`${API_URL}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data.user);
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signUp = async (email, password, name) => {
-    const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/auth/register', {
+    const response = await axios.post(`${API_URL}/api/auth/register`, {
       email,
       password,
       name,
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signIn = async (email, password) => {
-    const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/auth/login', {
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
       email,
       password,
     });
@@ -82,14 +83,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const forgotPassword = async (email) => {
-    const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/auth/forgot-password', {
+    const response = await axios.post(`${API_URL}/api/auth/forgot-password`, {
       email,
     });
     return response.data;
   };
 
   const verifyOTP = async (email, otp) => {
-    const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/auth/verify-otp', {
+    const response = await axios.post(`${API_URL}/api/auth/verify-otp`, {
       email,
       otp,
     });
@@ -97,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const resetPassword = async (email, otp, newPassword) => {
-    const response = await axios.post('https://my-portfolio-hxer.onrender.com/api/auth/reset-password', {
+    const response = await axios.post(`${API_URL}/api/auth/reset-password`, {
       email,
       otp,
       newPassword,

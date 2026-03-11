@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_URL from '../config/api';
 import './Messenger.css';
 
 const Messenger = () => {
@@ -27,7 +28,7 @@ const Messenger = () => {
     setSuccessMsg('');
 
     try {
-      await axios.post('http://localhost:5000/api/messages/simple', {
+      await axios.post(`${API_URL}/api/messages/simple`, {
         name: name.trim(),
         message: message.trim(),
       });
