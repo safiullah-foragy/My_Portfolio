@@ -1,4 +1,4 @@
-@echo off
+X@echo off
 echo =====================================
 echo Portfolio Admin Panel - Quick Start
 echo =====================================
