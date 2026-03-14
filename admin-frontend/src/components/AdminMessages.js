@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminMessages.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://my-portfolio-hxer.onrender.com';
+
 const AdminMessages = () => {
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -16,7 +18,7 @@ const AdminMessages = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/messages');
+      const response = await axios.get(`${API_URL}/api/messages`);
       // Sort by most recent first
       const sortedMessages = response.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -35,7 +37,7 @@ const AdminMessages = () => {
     // Mark as read if not already
     if (!message.isRead) {
       try {
-        await axios.put(`http://localhost:5000/api/messages/${message._id}/read`);
+        await axios.put(`${API_URL}/api/messages/${message._id}/read`);
         fetchMessages(); // Refresh to update read status
       } catch (error) {
         console.error('Error marking message as read:', error);
@@ -47,7 +49,7 @@ const AdminMessages = () => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/messages/${messageId}`);
+      await axios.delete(`${API_URL}/api/messages/${messageId}`);
       setSelectedMessage(null);
       fetchMessages();
     } catch (error) {

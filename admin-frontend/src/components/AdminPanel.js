@@ -3,6 +3,8 @@ import axios from 'axios';
 import Select from 'react-select';
 import './AdminPanel.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'https://my-portfolio-hxer.onrender.com';
+
 const AdminPanel = () => {
   const messageTimeoutRef = useRef(null);
   const [profile, setProfile] = useState({
@@ -123,7 +125,7 @@ const AdminPanel = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/profile');
+      const response = await axios.get(`${API_URL}/api/profile`);
       if (response.data) {
         // Ensure platforms and projects arrays exist
         const platforms = response.data.platforms || [];
@@ -189,7 +191,7 @@ const AdminPanel = () => {
     formData.append('image', imageFile);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/profile/upload', formData, {
+      const response = await axios.post(`${API_URL}/api/profile/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -208,7 +210,7 @@ const AdminPanel = () => {
     formData.append('image', coverFile);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/profile/upload', formData, {
+      const response = await axios.post(`${API_URL}/api/profile/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -303,7 +305,7 @@ const AdminPanel = () => {
     try {
       setLoading(true);
       console.log('Saving profile with projects:', updatedProfile.projects);
-      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      await axios.post(`${API_URL}/api/profile`, updatedProfile);
       
       // Update local state after successful save
       setProfile(updatedProfile);
@@ -342,7 +344,7 @@ const AdminPanel = () => {
         projects: updatedProjects
       };
 
-      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      await axios.post(`${API_URL}/api/profile`, updatedProfile);
       setProfile(updatedProfile);
       showMessage('Project deleted successfully!');
       fetchProfile();
@@ -378,7 +380,7 @@ const AdminPanel = () => {
         projects: sortedProjects
       };
 
-      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      await axios.post(`${API_URL}/api/profile`, updatedProfile);
       setProfile(updatedProfile);
       setEditingProjectIndex(null);
       setEditingProject(null);
@@ -437,7 +439,7 @@ const AdminPanel = () => {
       };
 
       console.log('Saving profile with projects:', updatedProfile.projects);
-      await axios.post('http://localhost:5000/api/profile', updatedProfile);
+      await axios.post(`${API_URL}/api/profile`, updatedProfile);
       showMessage('Profile saved successfully!');
       fetchProfile();
     } catch (error) {
@@ -451,7 +453,7 @@ const AdminPanel = () => {
     if (window.confirm('Are you sure you want to delete the entire profile?')) {
       setLoading(true);
       try {
-        await axios.delete('http://localhost:5000/api/profile');
+        await axios.delete(`${API_URL}/api/profile`);
         showMessage('Profile deleted successfully!');
         setProfile({
           profileImage: '',
